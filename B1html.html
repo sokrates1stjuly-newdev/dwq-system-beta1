@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kho Truyện Manager</title>
+  <style>:root {
+  --accent: #0d9488;
+  --accent-text: #ffffff;
+  --bg: #090c12;
+  --sidebar-bg: #111827;
+  --panel: #111827;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.12);
+  --input-bg: #1e293b;
+  --card-bg: #1e293b;
+  --modal-bg: #111827;
+  --btn-ghost-bg: rgba(255, 255, 255, 0.06);
+  --btn-ghost-text: #e2e8f0;
+  --item-active-bg: rgba(13, 148, 136, 0.2);
+}
+
+[data-theme="light"] {
+  --accent: #0d9488;
+  --accent-text: #ffffff;
+  --bg: #f8fafc;
+  --sidebar-bg: #ffffff;
+  --panel: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --input-bg: #ffffff;
+  --card-bg: #ffffff;
+  --modal-bg: #ffffff;
+  --btn-ghost-bg: #f1f5f9;
+  --btn-ghost-text: #334155;
+  --item-active-bg: #ccfbf1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 270px;
+  border-right: 1px solid var(--border);
+  background: var(--sidebar-bg);
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+.brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-kicker {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.brand h2 {
+  margin: 2px 0 0;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.btn, .ghost {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--btn-ghost-text);
+  background: var(--btn-ghost-bg);
+}
+
+.btn {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  flex: 1;
+  text-align: left;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--btn-ghost-bg);
+  color: var(--text);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.nav-item.active {
+  background: var(--item-active-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cabinet-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.nav-row:hover .cabinet-actions {
+  opacity: 1;
+}
+
+.cab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 2px 4px;
+  font-size: 12px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.cab-btn:hover {
+  background: var(--border);
+}
+
+.cab-btn.danger:hover {
+  color: #ef4444;
+}
+
+.nav-divider {
+  height: 1px;
+  background-color: var(--border);
+  margin: 10px 4px;
+  opacity: 0.8;
+}
+
+/* Main Area */
+main {
+  flex: 1;
+  min-width: 0;
+  padding: 20px;
+  overflow: auto;
+}
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  color: var(--text);
+}
+
+.left-column {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-column {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-grid {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+}
+
+.divider-line {
+  width: 1px;
+  background-color: var(--border);
+  min-height: 400px; 
+  align-self: stretch; 
+  flex-shrink: 0;
+  margin: 0 20px; 
+}
+
+/* Tab bộ lọc & Tab chi tiết */
+.filter-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  height: 118px;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.details-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  height: 118px;
+  display: flex;
+  box-sizing: border-box;
+  justify-content: center; /* Ngang */
+  align-items: center;     /* Dọc */
+}
+
+.filter-panel {
+  flex-direction: column;
+  justify-content: center;
+}
+
+.details-panel {
+  align-items: center;
+}
+
+.details-panel h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.detail-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.detail-header-row h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.icon-btn {
+  background: var(--btn-ghost-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: var(--border);
+}
+
+.icon-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Khung chứa nội dung chính - Tạo đường kẻ nét liền phía trên & dưới */
+.column-content {
+  margin-top: 16px;
+  padding: 16px 0;
+  width: 100%;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.outside-text {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 16px 0;
+  text-align: center;
+  border-top: none;
+  border-bottom: none;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input, select, textarea {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--input-bg);
+  color: var(--text);
+  padding: 8px 12px;
+  font-size: 13px;
+  width: 100%;
+}
+
+input, select {
+  height: 38px;
+}
+
+.sub-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toolbar select {
+  width: 130px;
+}
+
+.chip {
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: var(--btn-ghost-bg);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  white-space: nowrap;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--card-bg);
+}
+
+.cover {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.card-main {
+  padding: 10px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.author {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.theme-toggle {
+  background: var(--btn-ghost-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+/* Modal Popup */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-box {
+  background: var(--modal-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.modal-box.modal-lg {
+  width: 520px;
+  max-width: 95%;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label,
+.form-group-desc label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.form-group-desc {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.form-group-desc textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+@media(max-width: 900px) {
+  .shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .content-grid {
+    flex-direction: column;
+  }
+  .divider-line {
+    width: 100%;
+    height: 1px;
+    min-height: 1px;
+    margin: 10px 0;
+  }
+  .filter-panel, .details-panel {
+    height: auto;
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}</style>
+</head>
+<body>
+  <div class="shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-left">
+          <img src="logo1.1.png" alt="Logo" class="brand-logo">
+          <div class="brand-info">
+            <div class="brand-kicker">Dwq System</div>
+            <h2>Kho Truyện</h2>
+          </div>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" title="Đổi giao diện">☀️</button>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btn-add-story">+ Truyện</button>
+        <button class="ghost" id="btn-add-cabinet">+ Tủ</button>
+      </div>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+
+    <!-- Content Chính -->
+    <main>
+      
+      <section class="content-grid">
+        <!-- Cột trái: Bộ lọc & Danh sách thẻ -->
+        <div class="left-column">
+          <div class="filter-panel">
+            <div class="toolbar">
+              <input id="search" placeholder="Tìm theo tên, mô tả, tác giả, thể loại...">
+              <div class="sub-toolbar">
+                <select id="sort">
+                  <option value="title">Tên A-Z</option>
+                  <option value="title-desc">Tên Z-A</option>
+                </select>
+                <div id="story-count" class="chip">Tổng: 0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column-content">
+            <div id="cards-container" class="cards"></div>
+            <p id="empty-story-msg" class="outside-text">Chưa có truyện phù hợp.</p>
+          </div>
+        </div>
+
+        <!-- Đường kẻ phân cách dọc -->
+        <div class="divider-line"></div>
+
+        <!-- Cột phải: Tab Chi tiết & Nội dung -->
+        <div class="right-column">
+          <aside class="details-panel">
+            <h3>Chi tiết truyện</h3>
+          </aside>
+
+          <div class="column-content">
+            <div id="details-content"></div>
+            <p id="empty-detail-msg" class="outside-text" >Chọn một truyện để xem chi tiết.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODAL THÊM / SỬA TRUYỆN -->
+  <div id="modal-story" class="modal-backdrop" style="display: none;">
+    <div class="modal-box modal-lg">
+      <h3 id="modal-story-title">Thêm Truyện Mới</h3>
+      
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Tên truyện (*):</label>
+          <input type="text" id="input-title" placeholder="Nhập tên truyện...">
+        </div>
+        <div class="form-group flex-1">
+          <label>Tủ truyện:</label>
+          <select id="input-cabinet"></select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Tác giả:</label>
+          <input type="text" id="input-author" placeholder="Nhập tác giả...">
+        </div>
+        <div class="form-group flex-1">
+          <label>Thể loại:</label>
+          <input type="text" id="input-genre" placeholder="Nhập thể loại...">
+        </div>
+      </div>
+
+      <div class="form-group-desc">
+        <label>Mô tả:</label>
+        <textarea id="input-desc" placeholder="Nhập mô tả truyện..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="ghost" id="close-modal-story">Hủy</button>
+        <button class="btn" id="save-story">Lưu Truyện</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL THÊM TỦ -->
+  <div id="modal-cabinet" class="modal-backdrop" style="display: none;">
+    <div class="modal-box">
+      <h3>Thêm Tủ Truyện Mới</h3>
+      <div class="form-group">
+        <label>Tên tủ (*):</label>
+        <input type="text" id="input-cabinet-name" placeholder="Ví dụ: Đã đọc, Tiên hiệp...">
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" id="close-modal-cabinet">Hủy</button>
+        <button class="btn" id="save-cabinet">Lưu Tủ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SỬA TỦ -->
+  <div id="modal-edit-cabinet" class="modal-backdrop" style="display: none;">
+    <div class="modal-box">
+      <h3>Sửa Tên Tủ Truyện</h3>
+      <div class="form-group">
+        <label>Tên tủ mới (*):</label>
+        <input type="text" id="input-edit-cabinet-name" placeholder="Nhập tên tủ mới...">
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" id="close-modal-edit-cabinet">Hủy</button>
+        <button class="btn" id="save-edit-cabinet">Lưu Thay Đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const savedLibrary = localStorage.getItem("kho_truyen_data");
+const state = {
+  theme: localStorage.getItem("theme") || "dark",
+  search: "",
+  sort: "title",
+  active: "all",
+  selectedId: null,
+  editingId: null,
+  editingCabinetId: null,
+  library: savedLibrary ? JSON.parse(savedLibrary) : {
+    cabinets: [
+      { id: "fav", name: "Yêu thích", isPinned: false }
+    ],
+    stories: []
+  }
+};
+
+// TỰ ĐỘNG LÀM SẠCH: Loại bỏ các tủ trùng tên hoặc trùng ID "fav"
+if (state.library && state.library.cabinets) {
+  state.library.cabinets = state.library.cabinets.filter(c => c.id !== "fav" && c.name.trim().toLowerCase() !== "yêu thích");
+  state.library.cabinets.unshift({ id: "fav", name: "Yêu thích", isPinned: false });
+}
+
+function saveData() {
+  localStorage.setItem("kho_truyen_data", JSON.stringify(state.library));
+}
+
+function esc(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function initials(title) {
+  return (title || "").trim().slice(0, 2).toUpperCase() || "TR";
+}
+
+function render() {
+  document.documentElement.setAttribute("data-theme", state.theme);
+  
+  const L = state.library || { cabinets: [], stories: [] };
+  const q = state.search.trim().toLowerCase();
+
+  // LỌC TRUYỆN
+  let stories = (L.stories || []).filter(s => {
+    const matchesSearch = !q || [s.title, s.description, s.author, s.genre].join(" ").toLowerCase().includes(q);
+    if (!matchesSearch) return false;
+
+    if (state.active === "all") return true;
+    if (state.active === "fav") return !!s.isFavorite;
+    return s.cabinetId === state.active;
+  });
+
+  stories.sort((a, b) => {
+    if (state.sort === "title-desc") return (b.title || "").localeCompare(a.title || "");
+    return (a.title || "").localeCompare(b.title || "");
+  });
+
+  // 1. Render Sidebar Nav
+  const nav = document.getElementById("sidebar-nav");
+  if (nav) {
+    const defaultCabinets = L.cabinets.filter(c => c.id === "fav");
+    const customCabinets = L.cabinets.filter(c => c.id !== "fav");
+
+    customCabinets.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
+
+    nav.innerHTML = `
+      <div class="nav-row">
+        <button class="nav-item ${state.active === "all" ? "active" : ""}" data-cabinet="all">
+          <span>📚 Tất cả</span>
+        </button>
+      </div>
+      ${defaultCabinets.map(c => `
+        <div class="nav-row">
+          <button class="nav-item ${state.active === c.id ? "active" : ""}" data-cabinet="${esc(c.id)}">
+            <span>❤️ ${esc(c.name)}</span>
+          </button>
+        </div>
+      `).join("")}
+
+      <div class="nav-divider"></div>
+
+      ${customCabinets.map(c => `
+        <div class="nav-row">
+          <button class="nav-item ${state.active === c.id ? "active" : ""}" data-cabinet="${esc(c.id)}">
+            <span>${c.isPinned ? '📌 ' : ''}${esc(c.name)}</span>
+            <div class="cabinet-actions">
+              <button class="cab-btn btn-pin-cab" data-id="${esc(c.id)}" title="${c.isPinned ? 'Bỏ ghim' : 'Ghim tủ'}">${c.isPinned ? '📌' : '📍'}</button>
+              <button class="cab-btn btn-edit-cab" data-id="${esc(c.id)}" title="Sửa tủ">✏️</button>
+              <button class="cab-btn danger btn-delete-cab" data-id="${esc(c.id)}" title="Xóa tủ">🗑️</button>
+            </div>
+          </button>
+        </div>
+      `).join("")}
+    `;
+  }
+
+  // 2. Cập nhật Số lượng
+  const countEl = document.getElementById("story-count");
+  if (countEl) countEl.textContent = `Tổng: ${stories.length}`;
+
+  // 3. Render Cards
+  const container = document.getElementById("cards-container");
+  const emptyStoryMsg = document.getElementById("empty-story-msg");
+
+  if (container) {
+    if (stories.length > 0) {
+      container.innerHTML = stories.map(s => `
+        <article class="card">
+          <button data-select="${esc(s.id)}" style="all:unset;cursor:pointer;display:block;width:100%">
+            <div class="cover" style="background:${esc(s.cover || '#0d9488')}">${esc(initials(s.title))}</div>
+            <div class="card-main">
+              <div class="card-title">${esc(s.title)}</div>
+              <div class="author">${esc(s.author || 'Tác giả ẩn danh')}</div>
+            </div>
+          </button>
+        </article>
+      `).join("");
+      if (emptyStoryMsg) emptyStoryMsg.style.display = "none";
+    } else {
+      container.innerHTML = "";
+      if (emptyStoryMsg) emptyStoryMsg.style.display = "block";
+    }
+  }
+
+  // 4. Render Chi tiết Truyện
+  const detailsEl = document.getElementById("details-content");
+  const emptyDetailMsg = document.getElementById("empty-detail-msg");
+
+  const detail = (L.stories || []).find(s => s.id === state.selectedId);
+
+  if (detailsEl) {
+    if (detail) {
+      detailsEl.innerHTML = `
+        <div style="padding: 4px;">
+          <div class="detail-header-row">
+            <h2>${esc(detail.title)}</h2>
+            <div class="detail-actions">
+              <button class="icon-btn" id="btn-toggle-fav" title="Yêu thích">${detail.isFavorite ? "❤️" : "🤍"}</button>
+              <button class="icon-btn" id="btn-edit-story" title="Sửa truyện">✏️</button>
+              <button class="icon-btn danger" id="btn-delete-story" title="Xóa truyện">🗑️</button>
+            </div>
+          </div>
+          <p style="margin:4px 0;"><strong>Tác giả:</strong> ${esc(detail.author) || "—"}</p>
+          <p style="margin:4px 0;"><strong>Thể loại:</strong> ${esc(detail.genre) || "—"}</p>
+          <p style="margin:12px 0 0;color:var(--muted);font-size:13px;line-height:1.5;">${esc(detail.description) || "Chưa có mô tả."}</p>
+        </div>
+      `;
+      if (emptyDetailMsg) emptyDetailMsg.style.display = "none";
+
+      document.getElementById("btn-toggle-fav")?.addEventListener("click", () => {
+        detail.isFavorite = !detail.isFavorite;
+        saveData();
+        render();
+      });
+
+      document.getElementById("btn-edit-story")?.addEventListener("click", () => {
+        openEditStoryModal(detail);
+      });
+
+      document.getElementById("btn-delete-story")?.addEventListener("click", () => {
+        if (confirm(`Bạn có chắc chắn muốn xóa truyện "${detail.title}" không?`)) {
+          state.library.stories = state.library.stories.filter(s => s.id !== state.selectedId);
+          state.selectedId = null;
+          saveData();
+          render();
+        }
+      });
+
+    } else {
+      detailsEl.innerHTML = "";
+      if (emptyDetailMsg) emptyDetailMsg.style.display = "block";
+    }
+  }
+}
+
+function openEditStoryModal(detail) {
+  state.editingId = detail.id;
+  document.getElementById("modal-story-title").textContent = "Sửa Thông Tin Truyện";
+  document.getElementById("input-title").value = detail.title || "";
+  document.getElementById("input-author").value = detail.author || "";
+  document.getElementById("input-genre").value = detail.genre || "";
+  document.getElementById("input-desc").value = detail.description || "";
+
+  const cabinetSelect = document.getElementById("input-cabinet");
+  if (cabinetSelect) {
+    cabinetSelect.innerHTML = `
+      <option value="">-- Không chọn tủ --</option>
+      ${(state.library.cabinets || []).filter(c => c.id !== "fav").map(c => `
+        <option value="${esc(c.id)}" ${detail.cabinetId === c.id ? "selected" : ""}>${esc(c.name)}</option>
+      `).join("")}
+    `;
+  }
+
+  document.getElementById("modal-story").style.display = "flex";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  saveData();
+  render();
+
+  document.getElementById("search")?.addEventListener("input", (e) => {
+    state.search = e.target.value;
+    render();
+  });
+
+  document.getElementById("sort")?.addEventListener("change", (e) => {
+    state.sort = e.target.value;
+    render();
+  });
+
+  document.getElementById("theme-toggle")?.addEventListener("click", () => {
+    state.theme = state.theme === "dark" ? "light" : "dark";
+    localStorage.setItem("theme", state.theme);
+    render();
+  });
+
+  // Sự kiện Click
+  document.addEventListener("click", (e) => {
+    // Ghim tủ
+    const pinBtn = e.target.closest(".btn-pin-cab");
+    if (pinBtn) {
+      e.stopPropagation();
+      const cabId = pinBtn.dataset.id;
+      const cab = state.library.cabinets.find(c => c.id === cabId);
+      if (cab) {
+        cab.isPinned = !cab.isPinned;
+        saveData();
+        render();
+      }
+      return;
+    }
+
+    // Sửa tủ
+    const editBtn = e.target.closest(".btn-edit-cab");
+    if (editBtn) {
+      e.stopPropagation();
+      const cabId = editBtn.dataset.id;
+      const cab = state.library.cabinets.find(c => c.id === cabId);
+      if (cab) {
+        state.editingCabinetId = cabId;
+        document.getElementById("input-edit-cabinet-name").value = cab.name;
+        document.getElementById("modal-edit-cabinet").style.display = "flex";
+      }
+      return;
+    }
+
+    // Xóa tủ
+    const deleteBtn = e.target.closest(".btn-delete-cab");
+    if (deleteBtn) {
+      e.stopPropagation();
+      const cabId = deleteBtn.dataset.id;
+      const cab = state.library.cabinets.find(c => c.id === cabId);
+      if (cab && confirm(`Bạn có chắc chắn muốn xóa tủ "${cab.name}"? (Các truyện trong tủ này sẽ không bị xóa)`)) {
+        state.library.stories.forEach(s => {
+          if (s.cabinetId === cabId) s.cabinetId = "";
+        });
+        state.library.cabinets = state.library.cabinets.filter(c => c.id !== cabId);
+        if (state.active === cabId) state.active = "all";
+        saveData();
+        render();
+      }
+      return;
+    }
+
+    // Chọn tủ
+    const cabBtn = e.target.closest("[data-cabinet]");
+    if (cabBtn) {
+      state.active = cabBtn.dataset.cabinet;
+      render();
+      return;
+    }
+
+    // Chọn truyện
+    const selectBtn = e.target.closest("[data-select]");
+    if (selectBtn) {
+      state.selectedId = selectBtn.dataset.select;
+      render();
+    }
+  });
+
+  // Modals & Events
+  const modalStory = document.getElementById("modal-story");
+  const modalCabinet = document.getElementById("modal-cabinet");
+  const modalEditCabinet = document.getElementById("modal-edit-cabinet");
+
+  document.getElementById("btn-add-story")?.addEventListener("click", () => {
+    state.editingId = null;
+    document.getElementById("modal-story-title").textContent = "Thêm Truyện Mới";
+    document.getElementById("input-title").value = "";
+    document.getElementById("input-author").value = "";
+    document.getElementById("input-genre").value = "";
+    document.getElementById("input-desc").value = "";
+
+    const cabinetSelect = document.getElementById("input-cabinet");
+    if (cabinetSelect) {
+      cabinetSelect.innerHTML = `
+        <option value="">-- Không chọn tủ --</option>
+        ${(state.library.cabinets || []).filter(c => c.id !== "fav").map(c => `
+          <option value="${esc(c.id)}" ${state.active === c.id ? "selected" : ""}>${esc(c.name)}</option>
+        `).join("")}
+      `;
+    }
+    modalStory.style.display = "flex";
+  });
+
+  document.getElementById("close-modal-story")?.addEventListener("click", () => {
+    modalStory.style.display = "none";
+  });
+
+  document.getElementById("btn-add-cabinet")?.addEventListener("click", () => {
+    modalCabinet.style.display = "flex";
+  });
+
+  document.getElementById("close-modal-cabinet")?.addEventListener("click", () => {
+    modalCabinet.style.display = "none";
+  });
+
+  document.getElementById("close-modal-edit-cabinet")?.addEventListener("click", () => {
+    modalEditCabinet.style.display = "none";
+  });
+
+  // Lưu sửa tủ
+  document.getElementById("save-edit-cabinet")?.addEventListener("click", () => {
+    const name = document.getElementById("input-edit-cabinet-name").value.trim();
+    if (!name) {
+      alert("Vui lòng nhập tên tủ!");
+      return;
+    }
+
+    const cab = state.library.cabinets.find(c => c.id === state.editingCabinetId);
+    if (cab) {
+      cab.name = name;
+      saveData();
+      render();
+    }
+    modalEditCabinet.style.display = "none";
+  });
+
+  // Lưu truyện
+  document.getElementById("save-story")?.addEventListener("click", () => {
+    const title = document.getElementById("input-title").value.trim();
+    if (!title) {
+      alert("Vui lòng nhập tên truyện!");
+      return;
+    }
+
+    if (state.editingId) {
+      const story = state.library.stories.find(s => s.id === state.editingId);
+      if (story) {
+        story.title = title;
+        story.author = document.getElementById("input-author").value.trim();
+        story.genre = document.getElementById("input-genre").value.trim();
+        story.description = document.getElementById("input-desc").value.trim();
+        story.cabinetId = document.getElementById("input-cabinet").value;
+      }
+    } else {
+      const newStory = {
+        id: "story-" + Date.now(),
+        title: title,
+        author: document.getElementById("input-author").value.trim(),
+        genre: document.getElementById("input-genre").value.trim(),
+        description: document.getElementById("input-desc").value.trim(),
+        cabinetId: document.getElementById("input-cabinet").value,
+        cover: "#0d9488",
+        isFavorite: false
+      };
+      state.library.stories.push(newStory);
+      state.selectedId = newStory.id;
+    }
+
+    saveData();
+    render();
+    modalStory.style.display = "none";
+  });
+
+  // Lưu thêm tủ mới
+  document.getElementById("save-cabinet")?.addEventListener("click", () => {
+    const name = document.getElementById("input-cabinet-name").value.trim();
+    if (!name) {
+      alert("Vui lòng nhập tên tủ truyện!");
+      return;
+    }
+
+    const newCabinet = {
+      id: "cab-" + Date.now(),
+      name: name,
+      isPinned: false
+    };
+
+    state.library.cabinets.push(newCabinet);
+    state.active = newCabinet.id;
+    saveData();
+    render();
+
+    document.getElementById("input-cabinet-name").value = "";
+    modalCabinet.style.display = "none";
+  });
+});
+  </script>
+</body>
+</html>
